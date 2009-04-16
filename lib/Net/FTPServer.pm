@@ -4227,8 +4227,7 @@ sub _archive_generator_zip
 		   }
 
 		 $zip->addMember ($memb);
-		 $memb->desiredCompressionMethod
-		   (&{$ {Archive::Zip::}{COMPRESSION_DEFLATED}});
+		 $memb->desiredCompressionMethod(Archive::Zip::COMPRESSION_DEFLATED());
 		 $memb->desiredCompressionLevel (9);
 	       }
 	 },
@@ -4260,7 +4259,7 @@ sub _archive_generator_zip
 	if ($file)
 	  {
 	    unlink $tmpname;
-	    $zip->writeToFileHandle ($file, 1) == &{$ {Archive::Zip::}{AZ_OK}}
+	    $zip->writeToFileHandle ($file, 1) == Archive::Zip::AZ_OK()
 	      or die "failed to write to zip file: $!";
 	    $file->seek (0, 0);
 	  }
@@ -4269,7 +4268,7 @@ sub _archive_generator_zip
     unless ($file)
       {
 	$file = new IO::Scalar;
-	$zip->writeToFileHandle ($file, 1) == &{$ {Archive::Zip::}{AZ_OK}}
+	$zip->writeToFileHandle ($file, 1) == Archive::Zip::AZ_OK()
 	  or die "failed to write to zip file: $!";
 	$file->seek (0, 0);
       }
@@ -8109,16 +8108,16 @@ sub _newFromFileHandle
     $self->fileName ($filename);
     $self->{externalFileName} = $filename;
 
-    $self->{compressionMethod} = &{$ {Archive::Zip::}{COMPRESSION_STORED}};
+    $self->{compressionMethod} = Archive::Zip::COMPRESSION_STORED();
 
     my ($mode, $perms, $nlink, $user, $group, $size, $time) = $fileh->status;
     $self->{compressedSize} = $self->{uncompressedSize} = $size;
     $self->desiredCompressionMethod
       ($self->compressedSize > 0
-       ? &{$ {Archive::Zip::}{COMPRESSION_DEFLATED}}
-       : &{$ {Archive::Zip::}{COMPRESSION_STORED}});
+       ? Archive::Zip::COMPRESSION_DEFLATED()
+       : Archive::Zip::COMPRESSION_STORED());
     $self->unixFileAttributes ($perms);
-    $self->setLastModFileDateTimeFromUnix ($time);
+    $self->setLastModFileDateTimeFromUnix ($time) if $time;
     $self->isTextFile (0);
 
     $self;
